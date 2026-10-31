@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="noindex">
+  <title>QR-Codes – Dabei sein</title>
+  <style>
+    :root { --text: #24303a; --muted: #5a6670; --blue: #1971c2; --blue-soft: #e7f5ff; --line: #eceff1; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #fffdf9; color: var(--text); font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Ethiopic", "Nyala", "Ebrima", sans-serif; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 32px 16px 48px; }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .intro { color: var(--muted); margin: 0 0 20px; max-width: 680px; }
+    .bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 24px; }
+    .bar label { font-weight: 600; }
+    .bar input { font: inherit; padding: 8px 12px; border: 2px solid #d0ebff; border-radius: 12px; min-width: 280px; flex: 1 1 280px; }
+    button { font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 12px; cursor: pointer; border: 1px solid #d0ebff; background: var(--blue-soft); color: var(--blue); }
+    button.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px; text-align: center; break-inside: avoid; }
+    .card h2 { margin: 0 0 2px; font-size: 20px; }
+    .card .sub { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
+    .card svg { width: 100%; max-width: 200px; height: auto; display: block; margin: 0 auto 10px; }
+    .card .url { font-size: 12px; color: var(--muted); word-break: break-all; margin: 0 0 12px; }
+    .card .dl { display: flex; gap: 8px; justify-content: center; }
+    @media print {
+      .bar, .intro, .dl { display: none; }
+      .wrap { padding: 0; }
+      .grid { grid-template-columns: repeat(3, 1fr); }
+      .card { border: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>QR-Codes zur Webseite</h1>
+    <p class="intro">Jeder Code öffnet die Seite direkt in der passenden Sprache – praktisch für Elternbriefe, Plakate oder Flyer. «PNG» für Word und PowerPoint, «SVG» für Druckereien (beliebig gross, bleibt scharf).</p>
+
+    <div class="bar">
+      <label for="basis">Adresse:</label>
+      <input id="basis" value="https://dabei-sein-onepager.vercel.app/">
+      <button type="button" class="primary" onclick="window.print()">Alle drucken</button>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="texte.js"></script>
+  <script>
+    const basis = document.getElementById("basis");
+    const grid = document.getElementById("grid");
+
+    function urlFuer(code) {
+      const u = new URL(basis.value.trim() || "https://dabei-sein-onepager.vercel.app/");
+      u.searchParams.set("lang", code);
+      return u.toString();
+    }
+
+    function qrFuer(text) {
+      const qr = qrcode(0, "M");
+      qr.addData(text);
+      qr.make();
+      return qr;
+    }
+
+    function svgFuer(qr) {
+      return qr.createSvgTag({ cellSize: 8, margin: 4, scalable: true });
+    }
+
+    function pngHerunterladen(qr, name) {
+      const n = qr.getModuleCount(), zelle = 20, rand = 4 * zelle;
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = n * zelle + 2 * rand;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#000";
+      for (let r = 0; r < n; r++)
+        for (let c = 0; c < n; c++)
+          if (qr.isDark(r, c)) ctx.fillRect(rand + c * zelle, rand + r * zelle, zelle, zelle);
+      speichern(canvas.toDataURL("image/png"), name + ".png");
+    }
+
+    function svgHerunterladen(qr, name) {
+      const blob = new Blob([svgFuer(qr)], { type: "image/svg+xml" });
+      speichern(URL.createObjectURL(blob), name + ".svg");
+    }
+
+    function speichern(href, dateiname) {
+      const a = document.createElement("a");
+      a.href = href;
+      a.download = dateiname;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function zeichne() {
+      grid.innerHTML = "";
+      for (const [code, s] of Object.entries(SPRACHEN)) {
+        const url = urlFuer(code);
+        const qr = qrFuer(url);
+        const name = `qr-dabei-sein-${code}`;
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h2 lang="${code}" dir="${s.rtl ? "rtl" : "ltr"}">${s.name}</h2>
+          <p class="sub" lang="${code}" dir="${s.rtl ? "rtl" : "ltr"}">${TEXTE[code].titel}</p>
+          ${svgFuer(qr)}
+          <p class="url">${url}</p>
+          <div class="dl">
+            <button type="button" data-f="png">PNG</button>
+            <button type="button" data-f="svg">SVG</button>
+          </div>`;
+        card.querySelector('[data-f="png"]').addEventListener("click", () => pngHerunterladen(qr, name));
+        card.querySelector('[data-f="svg"]').addEventListener("click", () => svgHerunterladen(qr, name));
+        grid.appendChild(card);
+      }
+    }
+
+    basis.addEventListener("change", zeichne);
+    zeichne();
+  </script>
+</body>
+</html>
