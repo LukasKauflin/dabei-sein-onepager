@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Dabei sein – für jedes Kind</title>
+  <meta name="description" content="Freizeit, Sport und Kultur für alle Kinder – Unterstützung für Familien in der Schweiz. In 7 Sprachen.">
+  <style>
+    :root {
+      --bg: #fffdf9;
+      --card: #ffffff;
+      --text: #24303a;
+      --muted: #5a6670;
+      --accent: #e8590c;
+      --accent-soft: #fff1e6;
+      --green: #2f9e44;
+      --green-soft: #ebfbee;
+      --blue: #1971c2;
+      --blue-soft: #e7f5ff;
+      --line: #eceff1;
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 18px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Ethiopic", "Nyala", "Ebrima", sans-serif;
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+    a { color: inherit; }
+
+    header {
+      background: linear-gradient(135deg, #fff4e6 0%, #e6fcf5 55%, #e7f5ff 100%);
+      padding: 20px 0 40px;
+    }
+
+    .langs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 28px; }
+    .langs .globe { font-size: 18px; margin-inline-end: 4px; }
+    .langs button {
+      font: inherit; font-size: 15px; padding: 5px 12px; cursor: pointer;
+      border: 1px solid #d0ebff; border-radius: 999px; background: #ffffffb3; color: var(--text);
+    }
+    .langs button:hover { background: #fff; }
+    .langs button[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 700; }
+
+    .tag {
+      display: inline-block; font-size: 14px; font-weight: 600;
+      background: #ffffffcc; color: var(--green);
+      padding: 4px 12px; border-radius: 999px;
+    }
+    h1 { font-size: clamp(32px, 6.5vw, 52px); line-height: 1.15; margin: 14px 0 12px; }
+    .lead { font-size: 20px; color: var(--muted); max-width: 680px; margin: 0; }
+    .note { font-size: 14px; color: var(--muted); margin: 12px 0 0; font-style: italic; }
+
+    h2 { font-size: 26px; margin: 40px 0 16px; }
+
+    .search { margin-top: 28px; max-width: 620px; }
+    .search label { display: block; font-weight: 600; margin-bottom: 8px; }
+    .combo { position: relative; }
+    .combo .pin { position: absolute; inset-inline-start: 14px; top: 50%; transform: translateY(-50%); font-size: 18px; }
+    .combo input {
+      width: 100%; font: inherit; padding-block: 14px; padding-inline: 44px 48px;
+      border: 2px solid #d0ebff; border-radius: 16px; background: #fff; color: var(--text);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .combo input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px #d0ebff; }
+    .combo.chosen input { font-weight: 700; border-color: var(--blue); }
+    .clear {
+      position: absolute; inset-inline-end: 8px; top: 50%; transform: translateY(-50%);
+      width: 36px; height: 36px; border: 0; border-radius: 50%;
+      background: var(--blue-soft); color: var(--blue); font-size: 16px; cursor: pointer;
+    }
+    .clear:hover { background: #d0ebff; }
+    .suggest {
+      position: absolute; z-index: 10; left: 0; right: 0; top: calc(100% + 6px);
+      margin: 0; padding: 6px; list-style: none; background: #fff;
+      border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 12px 30px rgba(36, 48, 58, .12);
+    }
+    .suggest li { padding: 10px 12px; border-radius: 10px; cursor: pointer; }
+    .suggest li small { color: var(--muted); margin-inline-start: 6px; }
+    .suggest li.active, .suggest li:hover { background: var(--blue-soft); }
+    .suggest li.none { cursor: default; color: var(--muted); font-size: 16px; }
+    .suggest li.none:hover { background: none; }
+
+    .feature {
+      margin-top: -20px; background: var(--card); border-radius: 24px;
+      padding: 28px; box-shadow: 0 10px 30px rgba(36, 48, 58, .08);
+      border-top: 6px solid var(--green);
+    }
+    .feature h2 { margin: 0 0 6px; }
+    .feature > p { margin: 0 0 20px; color: var(--muted); max-width: 720px; }
+    .feature-grid {
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    }
+    .offer {
+      background: var(--green-soft); border-radius: 16px; padding: 16px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .offer .icon { font-size: 28px; }
+    .offer h3 { margin: 0; font-size: 18px; }
+    .offer p { margin: 0; font-size: 15px; color: var(--muted); }
+    .offer a { font-size: 15px; font-weight: 700; color: var(--green); text-decoration: none; margin-top: auto; }
+    .why {
+      margin-top: 20px; padding: 14px 16px; border-radius: 14px;
+      background: var(--blue-soft); color: #174a7c; font-size: 16px;
+    }
+
+    @keyframes einblenden { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .local {
+      animation: einblenden .25s ease-out;
+      margin: 24px 0 36px; background: var(--card); border-radius: 24px; padding: 28px;
+      box-shadow: 0 10px 30px rgba(36, 48, 58, .08); border-top: 6px solid var(--blue);
+    }
+    .local h2 { margin: 0 0 4px; }
+    .local-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+    .change {
+      font: inherit; font-size: 15px; font-weight: 600; padding: 8px 14px; cursor: pointer;
+      border: 1px solid #d0ebff; border-radius: 12px; background: var(--blue-soft); color: var(--blue);
+    }
+    .local h3.sub { font-size: 20px; margin: 24px 0 12px; }
+    .local .hint { margin: 0; color: var(--muted); }
+    .local .offer { background: var(--blue-soft); }
+    .local .offer a { color: var(--blue); }
+    .places { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+    .place { border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+    .place h4 { margin: 0 0 4px; font-size: 17px; }
+    .place p { margin: 0 0 6px; font-size: 15px; color: var(--muted); }
+    .place a { font-size: 15px; font-weight: 700; color: var(--blue); text-decoration: none; margin-inline-end: 12px; }
+    .local .stand { margin-top: 16px; font-size: 14px; color: var(--muted); }
+
+    .grid {
+      display: grid; gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 20px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .icon { font-size: 30px; line-height: 1; }
+    .card h3 { margin: 4px 0 0; font-size: 20px; }
+    .card p { margin: 0; color: var(--muted); font-size: 16px; }
+    .links { display: flex; flex-direction: column; gap: 6px; margin-top: auto; padding-top: 10px; }
+    .links a {
+      font-size: 15px; font-weight: 600; text-decoration: none;
+      padding: 8px 12px; border-radius: 10px; background: var(--accent-soft); color: #b8440a;
+    }
+    .links a:hover, .offer a:hover, .sos a:hover, .place a:hover { text-decoration: underline; }
+    .links span { font-size: 15px; color: var(--muted); padding: 2px 12px; }
+
+    .sos {
+      margin: 36px 0 0; padding: 18px 20px; border-radius: var(--radius);
+      background: var(--blue-soft); display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center;
+    }
+    .sos strong { color: var(--blue); }
+    .sos a {
+      font-weight: 700; text-decoration: none; background: var(--card);
+      padding: 8px 14px; border-radius: 12px; border: 1px solid #d0ebff;
+    }
+    /* Telefonnummern immer von links nach rechts, auch auf Arabisch */
+    .sos a, .ltr { unicode-bidi: isolate; }
+
+    .first {
+      margin: 24px 0 40px; padding: 24px; border-radius: var(--radius);
+      border: 2px solid #ffd8a8; background: var(--accent-soft);
+    }
+    .first h2 { margin-top: 0; }
+    .first p { margin: 0 0 8px; }
+
+    footer { padding: 24px 0 40px; color: var(--muted); font-size: 15px; border-top: 1px solid var(--line); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav class="langs" id="langs"><span class="globe" aria-hidden="true">🌐</span></nav>
+      <span class="tag" data-t="tag"></span>
+      <h1 data-t="titel"></h1>
+      <p class="lead" data-t="lead"></p>
+      <p class="note" data-t="hinweisUebersetzung"></p>
+
+      <div class="search">
+        <label for="gemeinde" data-t="sucheLabel"></label>
+        <div class="combo">
+          <span class="pin" aria-hidden="true">📍</span>
+          <input id="gemeinde" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="vorschlaege"
+                 autocomplete="off" spellcheck="false">
+          <button type="button" class="clear" id="clear" hidden>✕</button>
+          <ul class="suggest" id="vorschlaege" role="listbox" hidden></ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main>
+      <section class="local" id="local" hidden aria-live="polite"></section>
+
+      <section class="feature">
+        <h2>⚽ <span data-t="mitmachenTitel"></span></h2>
+        <p data-t="mitmachenIntro"></p>
+        <div class="feature-grid" id="angebote"></div>
+        <div class="why"><strong data-t="warumTitel"></strong> <span data-t="warum"></span></div>
+      </section>
+
+      <h2 data-t="weitereTitel"></h2>
+      <div class="grid" id="kacheln"></div>
+
+      <div class="sos">
+        <span><strong data-t="sosTitel"></strong></span>
+        <a href="tel:147" data-t="sos147"></a>
+        <a href="tel:0848354555" data-t="sosEltern"></a>
+        <a href="tel:144" data-t="sos144"></a>
+      </div>
+
+      <section class="first">
+        <h2 data-t="startTitel"></h2>
+        <p><strong data-t="startFett"></strong> <span data-t="startText"></span></p>
+        <p data-t="startRecht"></p>
+      </section>
+    </main>
+
+    <footer data-t="fusszeile"></footer>
+  </div>
+
+  <noscript>
+    <p style="padding:16px">Bitte JavaScript aktivieren, um diese Seite zu nutzen.</p>
+  </noscript>
+
+  <script src="texte.js"></script>
+  <script src="gemeinden.js"></script>
+  <script>
+    const input = document.getElementById("gemeinde");
+    const combo = input.closest(".combo");
+    const clearBtn = document.getElementById("clear");
+    const liste = document.getElementById("vorschlaege");
+    const local = document.getElementById("local");
+    const alle = Object.entries(GEMEINDEN);
+    let sprache = "de";
+    let gewaehlt = null;
+    let treffer = [];
+    let aktiv = -1;
+
+    function speichere(key, wert) {
+      try { wert == null ? localStorage.removeItem(key) : localStorage.setItem(key, wert); } catch (e) {}
+    }
+    function lade(key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    }
+
+    // Text in der aktuellen Sprache, sonst Deutsch
+    function T(key) {
+      const v = TEXTE[sprache][key];
+      return v != null && v !== "" || key === "hinweisUebersetzung" ? v : TEXTE.de[key];
+    }
+    function Tsub(key, sub) {
+      const v = (TEXTE[sprache][key] || {})[sub];
+      return v || TEXTE.de[key][sub];
+    }
+    // Feld aus gemeinden.js: einfacher Text oder { de, en, ... }
+    function L(v) {
+      return typeof v === "string" ? v : (v[sprache] || v.de);
+    }
+    function fill(text, werte) {
+      return text.replace(/\{(\w)\}/g, (_, k) => werte[k]);
+    }
+    function esc(s) {
+      return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    }
+    function pfeil() {
+      return SPRACHEN[sprache].rtl ? "←" : "→";
+    }
+
+    // ---------- Sprache ----------
+    function waehleSprache(code) {
+      sprache = SPRACHEN[code] ? code : "de";
+      document.documentElement.lang = sprache === "de" ? "de-CH" : sprache;
+      document.documentElement.dir = SPRACHEN[sprache].rtl ? "rtl" : "ltr";
+      document.title = T("seitentitel");
+      document.querySelectorAll("[data-t]").forEach(el => { el.textContent = T(el.dataset.t); });
+      document.querySelector(".note").hidden = !T("hinweisUebersetzung");
+      input.placeholder = T("sucheBeispiel");
+      clearBtn.setAttribute("aria-label", T("loeschen"));
+      document.querySelectorAll("#langs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === sprache));
+      document.getElementById("langs").setAttribute("aria-label", T("sprache"));
+      zeichneAngebote();
+      zeichneKacheln();
+      if (gewaehlt) zeigeGemeinde(GEMEINDEN[gewaehlt]);
+      speichere("sprache", sprache);
+      const url = new URL(location.href);
+      url.searchParams.set("lang", sprache);
+      history.replaceState(null, "", url);
+    }
+
+    for (const [code, s] of Object.entries(SPRACHEN)) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.lang = code;
+      b.lang = code;
+      b.textContent = s.name;
+      b.addEventListener("click", () => waehleSprache(code));
+      document.getElementById("langs").appendChild(b);
+    }
+
+    // ---------- Inhalte ----------
+    function zeichneAngebote() {
+      document.getElementById("angebote").innerHTML = ANGEBOTE.map(a => {
+        const [titel, text] = Tsub("o", a.id);
+        return `
+          <div class="offer">
+            <div class="icon" aria-hidden="true">${a.icon}</div>
+            <h3>${esc(titel)}</h3>
+            <p>${esc(text)}</p>
+            ${a.url ? `<a href="${a.url}">${esc(a.linkText)} ${pfeil()}</a>` : ""}
+          </div>`;
+      }).join("");
+    }
+
+    function zeichneKacheln() {
+      document.getElementById("kacheln").innerHTML = KACHELN.map(k => {
+        const [titel, text] = Tsub("k", k.id);
+        const links = k.links.map(l => {
+          const label = l.name || Tsub("l", l.l);
+          return l.url ? `<a href="${l.url}">${esc(label)} ${pfeil()}</a>` : `<span>${esc(label)}</span>`;
+        }).join("");
+        return `
+          <article class="card">
+            <div class="icon" aria-hidden="true">${k.icon}</div>
+            <h3>${esc(titel)}</h3>
+            <p>${esc(text)}</p>
+            <div class="links">${links}</div>
+          </article>`;
+      }).join("");
+    }
+
+    // ---------- Gemeinde-Auswahl ----------
+    function plzBereich(g) {
+      return g.plz.length > 1 ? `${g.plz[0]}–${g.plz[g.plz.length - 1]}` : g.plz[0];
+    }
+
+    function suche(q) {
+      q = q.trim().toLowerCase();
+      if (!q) return alle;
+      return alle.filter(([, g]) => g.name.toLowerCase().includes(q) || g.plz.some(p => p.startsWith(q)));
+    }
+
+    function schliesseListe() {
+      liste.hidden = true;
+      input.setAttribute("aria-expanded", "false");
+      aktiv = -1;
+    }
+
+    function zeigeListe() {
+      const q = input.value.trim();
+      treffer = suche(q);
+      aktiv = treffer.length ? 0 : -1;
+      if (treffer.length) {
+        liste.innerHTML = treffer.map(([key, g], i) =>
+          `<li role="option" data-key="${key}" class="${i === aktiv ? "active" : ""}">${esc(g.name)}<small><span class="ltr">${plzBereich(g)}</span> · ${esc(fill(T("kanton"), { k: g.kanton }))}</small></li>`
+        ).join("");
+      } else {
+        liste.innerHTML = `<li class="none">${esc(fill(T("keineDaten"), { q }))}</li>`;
+      }
+      liste.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+    }
+
+    function markiere(i) {
+      aktiv = i;
+      liste.querySelectorAll("li[data-key]").forEach((li, j) => li.classList.toggle("active", j === i));
+    }
+
+    function waehle(key) {
+      gewaehlt = key;
+      input.value = GEMEINDEN[key].name;
+      combo.classList.add("chosen");
+      clearBtn.hidden = false;
+      schliesseListe();
+      zeigeGemeinde(GEMEINDEN[key]);
+      speichere("gemeinde", key);
+    }
+
+    function abwaehlen() {
+      gewaehlt = null;
+      input.value = "";
+      combo.classList.remove("chosen");
+      clearBtn.hidden = true;
+      local.hidden = true;
+      local.innerHTML = "";
+      schliesseListe();
+      speichere("gemeinde", null);
+    }
+
+    function zeigeGemeinde(g) {
+      const offers = g.mitmachen.map(o => `
+        <div class="offer">
+          <div class="icon" aria-hidden="true">${o.icon}</div>
+          <h3>${esc(L(o.titel))}</h3>
+          <p>${esc(L(o.text))}</p>
+          ${o.link ? `<a href="${o.link}">${esc(T("webseite"))} ${pfeil()}</a>` : ""}
+        </div>`).join("");
+      const places = g.anlaufstellen.map(a => `
+        <div class="place">
+          <h4>${esc(L(a.titel))}</h4>
+          <p>${esc(L(a.text))}</p>
+          ${a.tel ? `<a href="tel:${a.tel}">${esc(T("anrufen"))}</a>` : ""}
+          ${a.link ? `<a href="${a.link}">${esc(T("webseite"))} ${pfeil()}</a>` : ""}
+        </div>`).join("");
+      local.innerHTML = `
+        <div class="local-head">
+          <div>
+            <h2>📍 ${esc(fill(T("lokalTitel"), { g: g.name }))}</h2>
+            <p class="hint">${esc(fill(T("kanton"), { k: g.kanton }))}</p>
+          </div>
+          <button type="button" class="change" id="change">${esc(T("andereGemeinde"))}</button>
+        </div>
+        <h3 class="sub">${esc(fill(T("lokalMitmachen"), { g: g.name }))}</h3>
+        <div class="feature-grid">${offers}</div>
+        <h3 class="sub">${esc(T("lokalStellen"))}</h3>
+        <div class="places">${places}</div>
+        <p class="stand">${esc(T("stand"))}</p>`;
+      local.hidden = false;
+      document.getElementById("change").addEventListener("click", () => {
+        abwaehlen();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        input.focus({ preventScroll: true });
+      });
+    }
+
+    input.addEventListener("focus", zeigeListe);
+    input.addEventListener("input", () => {
+      gewaehlt = null;
+      combo.classList.remove("chosen");
+      clearBtn.hidden = !input.value;
+      local.hidden = true;
+      zeigeListe();
+      // Ganze PLZ oder genauer Name eingetippt → direkt auswählen
+      const q = input.value.trim().toLowerCase();
+      const exakt = alle.find(([, g]) => g.name.toLowerCase() === q || g.plz.includes(q));
+      if (exakt) waehle(exakt[0]);
+    });
+    input.addEventListener("keydown", e => {
+      const n = liste.querySelectorAll("li[data-key]").length;
+      if (e.key === "ArrowDown" && n) { e.preventDefault(); if (liste.hidden) zeigeListe(); else markiere((aktiv + 1) % n); }
+      else if (e.key === "ArrowUp" && n) { e.preventDefault(); markiere((aktiv - 1 + n) % n); }
+      else if (e.key === "Enter" && aktiv >= 0 && !liste.hidden) { e.preventDefault(); waehle(treffer[aktiv][0]); }
+      else if (e.key === "Escape") { schliesseListe(); }
+    });
+    liste.addEventListener("mousedown", e => {
+      const li = e.target.closest("li[data-key]");
+      if (li) { e.preventDefault(); waehle(li.dataset.key); }
+    });
+    input.addEventListener("blur", schliesseListe);
+    clearBtn.addEventListener("click", () => { abwaehlen(); input.focus(); });
+
+    // ---------- Start ----------
+    // Sprache: ?lang=… im Link, sonst zuletzt gewählt, sonst Browsersprache, sonst Deutsch
+    const ausLink = new URLSearchParams(location.search).get("lang");
+    const browser = (navigator.language || "de").slice(0, 2);
+    waehleSprache([ausLink, lade("sprache"), browser].find(c => c && SPRACHEN[c]) || "de");
+
+    const gespeichert = lade("gemeinde");
+    if (gespeichert && GEMEINDEN[gespeichert]) waehle(gespeichert);
+  </script>
+</body>
+</html>
